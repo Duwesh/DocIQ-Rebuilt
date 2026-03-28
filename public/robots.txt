@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://dociq.ai/sitemap.xml
