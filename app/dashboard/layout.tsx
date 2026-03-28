@@ -1,13 +1,14 @@
-"use client";
-
 import { Navbar } from "@/components/navbar";
 import { Sidebar } from "@/components/sidebar";
+import { syncUserToDatabase } from "@/lib/sync-user";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  await syncUserToDatabase();
+
   return (
     <div className="min-h-screen bg-muted/20">
       <Navbar />
