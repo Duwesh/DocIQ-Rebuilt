@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/navbar";
 import { Sidebar } from "@/components/sidebar";
-import { syncUserToDatabase } from "@/lib/sync-user";
+import { syncUserToDatabase, syncOrganizationToDatabase } from "@/lib/sync-user";
 
 export default async function DashboardLayout({
   children,
@@ -8,6 +8,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   await syncUserToDatabase();
+  await syncOrganizationToDatabase();
 
   return (
     <div className="min-h-screen bg-muted/20">
