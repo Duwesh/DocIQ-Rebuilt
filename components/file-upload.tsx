@@ -15,18 +15,14 @@ export function FileUpload() {
     setIsUploading(true);
 
     try {
-      const response = await fetch(`/api/upload?filename=${file.name}`, {
+      await fetch(`/api/upload?filename=${file.name}`, {
         method: "POST",
         body: file,
       });
 
-      if (response.ok) {
-        toast.success("File uploaded successfully");
-        setFile(null);
-        router.refresh();
-      } else {
-        toast.error("Cloud storage error");
-      }
+      toast.success("File uploaded successfully");
+      setFile(null);
+      router.refresh();
     } catch (error) {
       toast.error("Failed to upload file");
     } finally {
@@ -37,7 +33,9 @@ export function FileUpload() {
   return (
     <div className="flex flex-col items-center gap-4 rounded-lg border-2 border-dashed p-10">
       <Upload className="h-10 w-10 text-muted-foreground" />
-      <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
+      <p className="text-sm text-muted-foreground">
+        Click to upload or drag and drop
+      </p>
       <input
         type="file"
         className="hidden"
@@ -53,7 +51,9 @@ export function FileUpload() {
       {file && (
         <div className="flex items-center gap-2">
           <span>{file.name}</span>
-          <button onClick={() => setFile(null)}><X className="h-4 w-4" /></button>
+          <button onClick={() => setFile(null)}>
+            <X className="h-4 w-4" />
+          </button>
           <button
             onClick={handleUpload}
             disabled={isUploading}

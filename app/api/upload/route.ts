@@ -23,20 +23,21 @@ export async function POST(req: Request): Promise<NextResponse> {
     });
 
     if (orgId) {
-       await db.document.create({
-         data: {
-           name: filename,
-           fileUrl: blob.url,
-           fileSize: 0, // Simplified for now
-           fileType: filename.split(".").pop(),
-           organizationId: orgId,
-           userId: userId,
-         }
-       });
+      await db.document.create({
+        data: {
+          name: filename,
+          fileUrl: blob.url,
+          fileSize: 0, // Simplified for now
+          fileType: filename.split(".").pop(),
+          organizationId: orgId,
+          userId: userId,
+        },
+      });
     }
 
     return NextResponse.json(blob);
   } catch (error) {
+    console.log({ error });
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
