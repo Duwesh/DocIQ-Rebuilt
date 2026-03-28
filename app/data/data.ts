@@ -7,6 +7,7 @@ import {
   MessageSquare,
   Shield,
   Sparkles,
+  Tag,
   Upload,
   Users,
 } from "lucide-react";
@@ -83,6 +84,12 @@ export const analysisTypes: {
     label: "Extract",
     description: "Extract structured information",
     icon: List,
+  },
+  {
+    value: "keywords",
+    label: "Keywords",
+    description: "Extract top keywords and keyphrases",
+    icon: Tag,
   },
 ];
 

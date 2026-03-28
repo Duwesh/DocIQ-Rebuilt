@@ -3,7 +3,8 @@ export type AnalysisType =
   | "qa"
   | "sentiment"
   | "entities"
-  | "extract";
+  | "extract"
+  | "keywords";
 
 export interface Document {
   id: string;
