@@ -44,7 +44,7 @@ export function HeroSection({ userId }: { userId: string | null }) {
             <Link href="/dashboard">
               <Button
                 size="lg"
-                className="px-10 h-14 text-lg flex items-center gap-2 group shadow-lg hover:shadow-xl transition-all"
+                className="px-10 h-14 text-lg flex items-center gap-2 group shadow-lg hover:shadow-xl transition-all cursor-pointer"
               >
                 Go to Dashboard
                 <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
@@ -55,7 +55,7 @@ export function HeroSection({ userId }: { userId: string | null }) {
               <Link href="/sign-up">
                 <Button
                   size="lg"
-                  className="px-10 h-14 text-lg group shadow-lg hover:shadow-xl transition-all"
+                  className="px-10 h-14 text-lg group shadow-lg hover:shadow-xl transition-all cursor-pointer"
                 >
                   Start Free Trial
                   <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
@@ -66,7 +66,7 @@ export function HeroSection({ userId }: { userId: string | null }) {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="px-10 h-14 text-lg border-white/10 text-gray-300 hover:bg-white/5"
+                  className="px-10 h-14 text-lg border-white/10 text-gray-300 hover:bg-white/5 cursor-pointer"
                 >
                   Sign In
                 </Button>

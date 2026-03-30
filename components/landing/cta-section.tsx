@@ -45,7 +45,7 @@ export function CtaSection() {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
               <Button
                 size="lg"
-                className="px-12 h-16 text-xl group rounded-full font-bold shadow-2xl shadow-blue-500/20 transition-colors"
+                className="px-12 h-16 text-xl group rounded-full font-bold shadow-2xl shadow-blue-500/20 transition-colors cursor-pointer"
               >
                 Get Started Free
                 <ArrowRight className="ml-2 h-6 w-6 transition-transform group-hover:translate-x-1" />
