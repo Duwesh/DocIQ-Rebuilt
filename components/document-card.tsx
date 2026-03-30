@@ -158,49 +158,47 @@ export function DocumentCard({ doc }: { doc: any }) {
           </span>
         </div>
 
-        {!isAnalyzed ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                disabled={isAnalyzing}
-                size="sm"
-                className="h-9 gap-2 px-4 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              disabled={isAnalyzing}
+              size="sm"
+              className="h-9 gap-2 px-4 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition cursor-pointer"
+            >
+              {isAnalyzing ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Sparkles className="h-3.5 w-3.5" />
+              )}
+              {isAnalyzed ? "Re-analyze" : "Analyze"}
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className="w-56 rounded-xl p-1.5" align="end">
+            <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-3 py-2">
+              Choose Analysis Type
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+
+            {analysisTypes.map((type) => (
+              <DropdownMenuItem
+                key={type.value}
+                onClick={() => handleAnalyze(type.value)}
+                className="flex items-center gap-3 p-2.5 rounded-lg cursor-pointer focus:bg-primary/5 focus:text-primary transition-all group"
               >
-                {isAnalyzing ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Sparkles className="h-3.5 w-3.5" />
-                )}
-                Analyze
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent className="w-56" align="end">
-              <DropdownMenuLabel>Choose Analysis Type</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-
-              {analysisTypes.map((type) => (
-                <DropdownMenuItem
-                  key={type.value}
-                  onClick={() => handleAnalyze(type.value)}
-                  className="flex flex-col items-start gap-1 py-2 cursor-pointer focus:bg-blue-50 focus:text-blue-700"
-                >
-                  <div className="flex items-center gap-2 font-medium">
-                    <type.icon className="h-4 w-4" />
-                    {type.label}
-                  </div>
-                  <span className="text-[10px] opacity-70">
+                <div className="p-1.5 rounded-md bg-background border border-muted group-hover:border-primary/20 group-hover:bg-primary/5 transition-all shrink-0">
+                  <type.icon className="h-4 w-4 text-primary" />
+                </div>
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <span className="font-bold text-xs">{type.label}</span>
+                  <span className="text-[10px] text-muted-foreground leading-tight">
                     {type.description}
                   </span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100/50">
-             <CheckCircle2 className="h-3 w-3" /> INSIGHTS READY
-          </div>
-        )}
+                </div>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );

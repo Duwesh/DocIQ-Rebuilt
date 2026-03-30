@@ -182,23 +182,24 @@ export default async function DocumentPage({
            </div>
 
            {/* ACTIONS CARD */}
-           {(!document.aiSummary) && (
-              <div className="bg-linear-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 text-white shadow-xl space-y-6">
-                 <div className="space-y-2">
-                    <h3 className="font-bold text-xl flex items-center gap-2">
-                       <Sparkles className="h-5 w-5 shrink-0" />
-                       <span>Analyze Deeply</span>
-                    </h3>
-                    <p className="text-blue-50/80 text-sm leading-relaxed">
-                       Extract hidden insights, summaries, and key data points from this file using Gemini Pro.
-                    </p>
-                 </div>
-                 <AnalysisButton 
-                    documentId={document.id}
-                    className="w-full bg-white text-blue-600 hover:bg-blue-50 font-bold rounded-xl py-6 text-lg transition-transform active:scale-[0.98]"
-                 />
+           <div className="bg-linear-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 text-white shadow-xl space-y-6">
+              <div className="space-y-2">
+                 <h3 className="font-bold text-xl flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 shrink-0" />
+                    <span>{document.aiSummary ? "Run Analysis" : "Analyze Deeply"}</span>
+                 </h3>
+                 <p className="text-blue-50/80 text-sm leading-relaxed">
+                    {document.aiSummary
+                      ? "Re-run or try a different analysis type on this document."
+                      : "Extract hidden insights, summaries, and key data points from this file using Gemini Pro."}
+                 </p>
               </div>
-           )}
+              <AnalysisButton
+                 documentId={document.id}
+                 label={document.aiSummary ? "Re-analyze" : "Analyze"}
+                 className="w-full bg-white text-blue-600 hover:bg-blue-50 font-bold rounded-xl py-6 text-lg transition-transform active:scale-[0.98] cursor-pointer"
+              />
+           </div>
 
            {/* FILE INFO CARD */}
            <div className="bg-muted/30 border border-dashed rounded-3xl p-6 space-y-4">

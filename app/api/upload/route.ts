@@ -50,20 +50,35 @@ export async function POST(req: Request): Promise<NextResponse> {
       },
     });
 
-    // Instant AI analysis — pass raw bytes with the correct MIME type
+    // Instant AI analysis — run all core types on upload
     try {
       const fileBytes = await bodyAsBlob.arrayBuffer();
 
-      const [summary, sentiment] = await Promise.all([
+      const [summary, sentiment, keywordsRaw] = await Promise.all([
         analyzeDocumentFromBytes(fileBytes, mimeType, "summary"),
         analyzeDocumentFromBytes(fileBytes, mimeType, "sentiment"),
+        analyzeDocumentFromBytes(fileBytes, mimeType, "keywords"),
       ]);
+
+      let keywords: string[] = [];
+      try {
+        const cleaned = keywordsRaw.replace(/```json|```/g, "").trim();
+        const parsed = JSON.parse(cleaned);
+        keywords = Array.isArray(parsed) ? parsed : [];
+      } catch {
+        keywords = keywordsRaw
+          .replace(/[\[\]"]/g, "")
+          .split(",")
+          .map((k: string) => k.trim())
+          .filter(Boolean);
+      }
 
       await db.document.update({
         where: { id: createdDoc.id },
         data: {
           aiSummary: summary,
           sentiment: sentiment,
+          aiKeywords: keywords,
         },
       });
     } catch (err) {

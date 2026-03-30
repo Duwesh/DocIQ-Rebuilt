@@ -169,34 +169,34 @@ export function DocumentTable({ documents, isLoading }: DocumentTableProps) {
                           <MoreHorizontal className="h-4 w-4" />
                        </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-52 p-2 rounded-2xl shadow-xl border-muted/60">
+                    <DropdownMenuContent align="end" className="w-56 p-1.5 rounded-xl shadow-xl border-muted/60">
                        <DropdownMenuItem asChild>
-                          <Link href={`/dashboard/documents/${doc.id}`} className="flex items-center cursor-pointer p-3 rounded-xl">
-                             <Eye className="h-4 w-4 mr-3 text-blue-500" /> 
-                             <div className="flex flex-col gap-0.5">
+                          <Link href={`/dashboard/documents/${doc.id}`} className="flex items-center gap-3 cursor-pointer p-2.5 rounded-lg">
+                             <Eye className="h-4 w-4 shrink-0 text-blue-500" />
+                             <div className="flex flex-col gap-0.5 min-w-0">
                                 <span className="font-bold text-sm">Open Workspace</span>
                                 <span className="text-[10px] text-muted-foreground">Detailed Deep Analysis</span>
                              </div>
                           </Link>
                        </DropdownMenuItem>
-                       <DropdownMenuItem onClick={() => window.open(doc.fileUrl, "_blank")} className="cursor-pointer p-3 rounded-xl mt-1">
-                          <ExternalLink className="h-4 w-4 mr-3 text-muted-foreground" /> 
+                       <DropdownMenuItem onClick={() => window.open(doc.fileUrl, "_blank")} className="flex items-center gap-3 cursor-pointer p-2.5 rounded-lg">
+                          <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground" />
                           <span className="font-medium text-sm">View Original PDF</span>
                        </DropdownMenuItem>
                        <DropdownMenuItem asChild>
-                          <a href={doc.fileUrl} download={doc.name} className="flex items-center cursor-pointer p-3 rounded-xl mt-1">
-                             <Download className="h-4 w-4 mr-3 text-muted-foreground" /> 
+                          <a href={doc.fileUrl} download={doc.name} className="flex items-center gap-3 cursor-pointer p-2.5 rounded-lg">
+                             <Download className="h-4 w-4 shrink-0 text-muted-foreground" />
                              <span className="font-medium text-sm">Download Local Copy</span>
                           </a>
                        </DropdownMenuItem>
                        <DropdownMenuSeparator className="my-1" />
                        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-3 py-2">
-                          Research Neural Intelligence
+                          Analysis
                        </DropdownMenuLabel>
-                       <DropdownMenuItem 
-                          className="cursor-pointer p-3 rounded-xl flex items-center gap-3 focus:bg-primary/5 focus:text-primary transition-all group"
+                       <DropdownMenuItem
+                          className="flex items-center gap-3 cursor-pointer p-2.5 rounded-lg focus:bg-primary/5 focus:text-primary transition-all group"
                           onClick={() => {
-                            const res = fetch("/api/analyze", {
+                            fetch("/api/analyze", {
                               method: "POST",
                               body: JSON.stringify({ documentId: doc.id, analysisType: "summary" }),
                             }).then(r => {
@@ -209,9 +209,9 @@ export function DocumentTable({ documents, isLoading }: DocumentTableProps) {
                             });
                           }}
                        >
-                          <Sparkles className="h-4 w-4 text-amber-500 group-hover:scale-110 transition-transform" />
-                          <div className="flex flex-col">
-                             <span className="font-bold text-xs text-foreground uppercase tracking-wider">Deep Summary</span>
+                          <Sparkles className="h-4 w-4 shrink-0 text-amber-500 group-hover:scale-110 transition-transform" />
+                          <div className="flex flex-col gap-0.5 min-w-0">
+                             <span className="font-bold text-xs">Deep Summary</span>
                              <span className="text-[10px] text-muted-foreground">Regenerate insights</span>
                           </div>
                        </DropdownMenuItem>
