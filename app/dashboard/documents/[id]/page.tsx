@@ -70,23 +70,25 @@ export default async function DocumentPage({
                    {document.name}
                 </h1>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground font-medium">
-                   <div className="flex items-center gap-1.5">
-                      <Calendar className="h-4 w-4" />
-                      {new Date(document.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                   <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 shrink-0" />
+                      <span>{new Date(document.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
                    </div>
                    <span className="h-1 w-1 rounded-full bg-muted-foreground/30 hidden sm:block" />
-                   <div className="flex items-center gap-1.5">
-                      <Tag className="h-4 w-4" />
-                      {formatFileSize(document.fileSize ?? 0)} ({document.fileType?.toUpperCase() || "PDF"})
+                   <div className="flex items-center gap-2">
+                      <Tag className="h-4 w-4 shrink-0" />
+                      <span>{formatFileSize(document.fileSize ?? 0)} ({document.fileType?.toUpperCase() || "PDF"})</span>
                    </div>
                    <span className="h-1 w-1 rounded-full bg-muted-foreground/30 hidden sm:block" />
                    {document.aiSummary ? (
-                      <Badge className="h-5 px-2 text-[10px] bg-emerald-50 text-emerald-600 border-emerald-200 font-bold gap-1 shadow-none">
-                         <CheckCircle2 className="h-3 w-3" /> INSIGHTS READY
+                      <Badge className="h-5 px-2 text-[10px] bg-emerald-50 text-emerald-600 border-emerald-200 font-bold shadow-none flex items-center gap-1.5">
+                         <CheckCircle2 className="h-3 w-3 shrink-0" />
+                         <span>INSIGHTS READY</span>
                       </Badge>
                    ) : (
-                      <Badge variant="outline" className="h-5 px-2 text-[10px] text-amber-600 border-amber-200 bg-amber-50/50 font-bold gap-1 shadow-none">
-                         <Clock className="h-3 w-3" /> AWAITING ANALYSIS
+                      <Badge variant="outline" className="h-5 px-2 text-[10px] text-amber-600 border-amber-200 bg-amber-50/50 font-bold shadow-none flex items-center gap-1.5">
+                         <Clock className="h-3 w-3 shrink-0" />
+                         <span>AWAITING ANALYSIS</span>
                       </Badge>
                    )}
                 </div>
@@ -96,7 +98,8 @@ export default async function DocumentPage({
           <div className="flex items-center gap-2">
              <Button variant="outline" asChild className="rounded-xl shadow-sm hover:bg-muted/50">
                 <a href={document.fileUrl ?? undefined} target="_blank" className="flex items-center gap-2">
-                   <Eye className="h-4 w-4" /> View Original
+                   <Eye className="h-4 w-4 shrink-0" />
+                   <span>View Original</span>
                 </a>
              </Button>
              
@@ -106,10 +109,11 @@ export default async function DocumentPage({
                       <MoreVertical className="h-4 w-4" />
                    </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuContent align="end" className="w-52 rounded-xl p-1.5">
                    <DropdownMenuItem asChild>
-                      <a href={document.fileUrl ?? undefined} download={document.name} className="flex items-center cursor-pointer">
-                         <Download className="h-4 w-4 mr-2" /> Download File
+                      <a href={document.fileUrl ?? undefined} download={document.name} className="flex items-center gap-3 cursor-pointer rounded-lg p-2.5">
+                         <Download className="h-4 w-4 shrink-0" />
+                         <span className="font-bold text-sm">Download File</span>
                       </a>
                    </DropdownMenuItem>
                    <DropdownMenuSeparator />
@@ -127,8 +131,8 @@ export default async function DocumentPage({
           <div className="bg-card border rounded-[2rem] overflow-hidden shadow-lg min-h-[600px] h-[calc(100vh-320px)] flex flex-col group transition-all duration-300 hover:shadow-xl">
              <div className="bg-linear-to-r from-blue-600/5 to-transparent px-8 py-5 border-b shrink-0 flex items-center justify-between">
                 <div className="flex items-center gap-2 font-bold text-lg text-blue-900/80">
-                   <Sparkles className="h-5 w-5 text-blue-500" />
-                   AI Intelligence Research
+                   <Sparkles className="h-5 w-5 shrink-0 text-blue-500" />
+                   <span>AI Intelligence Research</span>
                 </div>
                 <div className="flex items-center gap-2">
                    <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">
@@ -158,7 +162,8 @@ export default async function DocumentPage({
            {/* KEYWORDS CARD */}
            <div className="bg-card border rounded-3xl p-6 shadow-sm space-y-4">
               <h3 className="font-bold text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                 <Tag className="h-4 w-4 text-blue-500" /> Key Entities
+                 <Tag className="h-4 w-4 shrink-0 text-blue-500" />
+                 <span>Key Entities</span>
               </h3>
               <div className="flex flex-wrap gap-2.5">
                  {document.aiKeywords && Array.isArray(document.aiKeywords) && document.aiKeywords.length > 0 ? (
@@ -181,7 +186,8 @@ export default async function DocumentPage({
               <div className="bg-linear-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 text-white shadow-xl space-y-6">
                  <div className="space-y-2">
                     <h3 className="font-bold text-xl flex items-center gap-2">
-                       <Sparkles className="h-5 w-5" /> Analyze Deeply
+                       <Sparkles className="h-5 w-5 shrink-0" />
+                       <span>Analyze Deeply</span>
                     </h3>
                     <p className="text-blue-50/80 text-sm leading-relaxed">
                        Extract hidden insights, summaries, and key data points from this file using Gemini Pro.

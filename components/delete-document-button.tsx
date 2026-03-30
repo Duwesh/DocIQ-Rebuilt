@@ -56,18 +56,18 @@ export function DeleteDocumentButton({
 
   if (variant === "menuitem") {
     return (
-      <DropdownMenuItem 
-        onClick={handleDelete} 
+      <DropdownMenuItem
+        onClick={handleDelete}
         disabled={isDeleting}
         className={cn(
-          "text-destructive cursor-pointer p-3 rounded-xl focus:bg-destructive/10 focus:text-destructive group/delete",
+          "text-destructive cursor-pointer p-2.5 rounded-lg focus:bg-destructive/10 focus:text-destructive group/delete flex items-center gap-3",
           className
         )}
       >
         {isDeleting ? (
-          <Loader2 className="h-4 w-4 mr-3 animate-spin" />
+          <Loader2 className="h-4 w-4 shrink-0 animate-spin" />
         ) : (
-          <Trash className="h-4 w-4 mr-3 group-hover/delete:scale-110 transition-transform" /> 
+          <Trash className="h-4 w-4 shrink-0 group-hover/delete:scale-110 transition-transform" />
         )}
         <span className="font-bold text-sm">Delete Ledger Record</span>
       </DropdownMenuItem>

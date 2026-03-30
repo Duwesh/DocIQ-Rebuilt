@@ -87,17 +87,17 @@ export function AnalysisButton({
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-muted/50 my-1" />
         {analysisTypes.map((type) => (
-          <DropdownMenuItem 
-            key={type.value} 
+          <DropdownMenuItem
+            key={type.value}
             onClick={() => handleAnalyze(type.value)}
             className="rounded-xl flex items-center gap-3 p-3 cursor-pointer focus:bg-primary/5 focus:text-primary transition-all group"
           >
-            <div className="p-2 rounded-lg bg-background border border-muted group-hover:border-primary/20 group-hover:bg-primary/5 transition-all">
+            <div className="p-2 rounded-lg bg-background border border-muted group-hover:border-primary/20 group-hover:bg-primary/5 transition-all shrink-0">
               <type.icon className="h-4 w-4 text-primary" />
             </div>
-            <div className="flex flex-col gap-0.5">
+            <div className="flex flex-col gap-0.5 min-w-0">
               <span className="font-bold text-xs">{type.label}</span>
-              <span className="text-[10px] text-muted-foreground leading-tight">
+              <span className="text-[10px] text-muted-foreground leading-tight truncate">
                 {type.description}
               </span>
             </div>
