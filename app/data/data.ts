@@ -42,6 +42,12 @@ export const steps = [
   "Get AI analysis instantly",
 ];
 
+export const stats = [
+  { value: "10k+", label: "Documents processed" },
+  { value: "99.9%", label: "Accuracy rate" },
+  { value: "5x", label: "Faster workflows" },
+];
+
 export const allowedTypes = [
   "text/plain",
   "application/pdf",

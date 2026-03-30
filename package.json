@@ -33,6 +33,7 @@
     "dotenv": "latest",
     "embla-carousel-react": "^8.6.0",
     "file-saver": "latest",
+    "framer-motion": "^12.38.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^1.7.0",
     "next": "latest",
