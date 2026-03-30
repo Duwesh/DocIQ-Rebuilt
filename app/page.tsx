@@ -4,6 +4,7 @@ import { FeaturesSection } from "@/components/landing/features-section";
 import { HowItWorksSection } from "@/components/landing/how-it-works-section";
 import { StatsSection } from "@/components/landing/stats-section";
 import { CtaSection } from "@/components/landing/cta-section";
+import { Footer } from "@/components/landing/footer";
 
 export default async function Home() {
   const { userId } = await auth();
@@ -15,6 +16,7 @@ export default async function Home() {
       <HowItWorksSection />
       <StatsSection />
       <CtaSection />
+      <Footer />
     </div>
   );
 }
