@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(find /c/Users/duwes/Desktop/Personal/AI/DocIQ/src -type f -name *.ts -o -name *.tsx)"
-    ]
-  }
-}
