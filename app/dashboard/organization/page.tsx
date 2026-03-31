@@ -21,16 +21,13 @@ import { Badge } from "@/components/ui/badge";
 import { Suspense } from "react";
 
 async function RegistrySection({
-  userId,
   orgId,
 }: {
-  userId: string;
   orgId: string | null | undefined;
 }) {
-  // Retrieve all documents belonging to this user in this organization
+  // Retrieve all documents belonging to this organization
   const documents = await db.document.findMany({
     where: {
-      userId: userId,
       organizationId: orgId || "none_for_personal",
     },
     orderBy: { createdAt: "desc" },
@@ -238,7 +235,7 @@ export default async function OrganizationPage() {
           </div>
         }
       >
-        <RegistrySection userId={userId} orgId={orgId} />
+        <RegistrySection orgId={orgId} />
       </Suspense>
     </div>
   );

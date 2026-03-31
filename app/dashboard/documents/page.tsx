@@ -20,13 +20,13 @@ import { Button } from "@/components/ui/button";
 import { RegistryView } from "@/components/registry-view";
 
 async function DocumentRegistry() {
-  const { userId, orgId } = await auth();
+  const { userId } = await auth();
   if (!userId) return null;
 
+  // Show all documents uploaded by the current user (across all orgs)
   const documents = await db.document.findMany({
     where: {
       userId: userId,
-      organizationId: orgId || "none_for_personal",
     },
     orderBy: { createdAt: "desc" },
   });

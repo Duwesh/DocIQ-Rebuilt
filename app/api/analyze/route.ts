@@ -10,7 +10,7 @@ import {
 } from "@/lib/gemini";
 import { rateLimit } from "@/lib/rate-limit";
 
-const ANALYZE_LIMIT = 20;
+const ANALYZE_LIMIT = 3;
 const ANALYZE_WINDOW_MS = 60_000;
 
 const VALID_TYPES = new Set<string>([
@@ -27,10 +27,7 @@ export async function POST(req: Request) {
     const { userId, orgId } = await auth();
 
     if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { success, resetInMs } = rateLimit(
@@ -117,7 +114,10 @@ export async function POST(req: Request) {
 
     if (analysisResult.startsWith("Could not analyze")) {
       return NextResponse.json(
-        { error: "AI analysis failed. The model could not process this document." },
+        {
+          error:
+            "AI analysis failed. The model could not process this document.",
+        },
         { status: 502 },
       );
     }

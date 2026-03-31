@@ -90,67 +90,67 @@ export function RegistryView({ initialDocuments }: RegistryViewProps) {
   const activeFiltersCount = (statusFilter ? 1 : 0) + typeFilter.length;
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-5 duration-700">
       {/* ================= UTILITY BAR ================= */}
-      <div className="flex flex-wrap items-center justify-between gap-6 p-6 rounded-[2.5rem] glass-card">
-         <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 w-full md:w-[450px] shadow-inner group focus-within:ring-2 focus-within:ring-primary/40 transition-all duration-300">
-            <Search className="h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-            <input 
-               placeholder="Search intelligence records..." 
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl glass-card">
+         <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 w-full md:w-[360px] shadow-inner group focus-within:ring-2 focus-within:ring-primary/40 transition-all duration-300">
+            <Search className="h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <input
+               placeholder="Search records..."
                value={searchQuery}
                onChange={(e) => setSearchQuery(e.target.value)}
-               className="bg-transparent border-none outline-hidden text-base font-semibold w-full placeholder:text-muted-foreground/50 text-white"
+               className="bg-transparent border-none outline-hidden text-sm font-medium w-full placeholder:text-muted-foreground/50 text-white"
             />
             {searchQuery && (
               <button onClick={() => setSearchQuery("")} className="text-muted-foreground hover:text-white transition-colors">
-                <X className="h-4 w-4" />
+                <X className="h-3.5 w-3.5" />
               </button>
             )}
          </div>
-         
-         <div className="flex items-center gap-4">
+
+         <div className="flex items-center gap-3">
             {/* Filter Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 px-8 py-6 h-auto text-base font-bold transition-all hover:scale-[1.02] relative">
-                  <Filter className="h-5 w-5 mr-3 text-primary" /> 
+                <Button variant="outline" className="rounded-xl border-white/10 bg-white/5 hover:bg-white/10 px-4 py-2 h-auto text-sm font-bold transition-all relative">
+                  <Filter className="h-4 w-4 mr-2 text-primary" />
                   Filter
                   {activeFiltersCount > 0 && (
-                     <Badge className="ml-2 bg-primary text-white h-5 w-5 flex items-center justify-center p-0 rounded-full text-[10px] animate-in zoom-in">
+                     <Badge className="ml-1.5 bg-primary text-white h-4 w-4 flex items-center justify-center p-0 rounded-full text-[9px] animate-in zoom-in">
                         {activeFiltersCount}
                      </Badge>
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64 p-2 rounded-2xl glass-card border-white/10 shadow-2xl">
-                <DropdownMenuLabel className="text-xs font-black uppercase tracking-widest text-muted-foreground p-3">Analysis Status</DropdownMenuLabel>
-                <DropdownMenuCheckboxItem 
+              <DropdownMenuContent align="end" className="w-56 p-1.5 rounded-xl glass-card border-white/10 shadow-2xl">
+                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground p-2">Analysis Status</DropdownMenuLabel>
+                <DropdownMenuCheckboxItem
                   checked={statusFilter === "ready"}
                   onCheckedChange={() => setStatusFilter(statusFilter === "ready" ? null : "ready")}
-                  className="rounded-xl flex items-center gap-2 p-3 font-bold text-sm cursor-pointer"
+                  className="rounded-lg flex items-center gap-2 p-2 font-bold text-xs cursor-pointer"
                 >
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Insights Ready
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> Insights Ready
                 </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem 
+                <DropdownMenuCheckboxItem
                   checked={statusFilter === "pending"}
                   onCheckedChange={() => setStatusFilter(statusFilter === "pending" ? null : "pending")}
-                  className="rounded-xl flex items-center gap-2 p-3 font-bold text-sm cursor-pointer"
+                  className="rounded-lg flex items-center gap-2 p-2 font-bold text-xs cursor-pointer"
                 >
-                  <Clock className="h-4 w-4 text-amber-500" /> Analyzing...
+                  <Clock className="h-3.5 w-3.5 text-amber-500" /> Analyzing...
                 </DropdownMenuCheckboxItem>
-                
-                <DropdownMenuSeparator className="bg-white/5 my-2" />
-                
-                <DropdownMenuLabel className="text-xs font-black uppercase tracking-widest text-muted-foreground p-3">File Extensions</DropdownMenuLabel>
+
+                <DropdownMenuSeparator className="bg-white/5 my-1.5" />
+
+                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground p-2">File Extensions</DropdownMenuLabel>
                 {["pdf", "docx", "txt", "xlsx"].map((type) => (
-                  <DropdownMenuCheckboxItem 
+                  <DropdownMenuCheckboxItem
                     key={type}
                     checked={typeFilter.includes(type)}
                     onCheckedChange={(checked) => {
                       if (checked) setTypeFilter([...typeFilter, type]);
                       else setTypeFilter(typeFilter.filter(t => t !== type));
                     }}
-                    className="rounded-xl p-3 font-bold text-sm uppercase cursor-pointer"
+                    className="rounded-lg p-2 font-bold text-xs uppercase cursor-pointer"
                   >
                     .{type}
                   </DropdownMenuCheckboxItem>
@@ -158,10 +158,10 @@ export function RegistryView({ initialDocuments }: RegistryViewProps) {
 
                 {(statusFilter || typeFilter.length > 0) && (
                    <>
-                    <DropdownMenuSeparator className="bg-white/5 my-2" />
-                    <DropdownMenuItem 
+                    <DropdownMenuSeparator className="bg-white/5 my-1.5" />
+                    <DropdownMenuItem
                       onClick={() => { setStatusFilter(null); setTypeFilter([]); }}
-                      className="rounded-xl p-3 font-bold text-sm text-destructive hover:text-white hover:bg-destructive/10 cursor-pointer flex justify-center"
+                      className="rounded-lg p-2 font-bold text-xs text-destructive hover:text-white hover:bg-destructive/10 cursor-pointer flex justify-center"
                     >
                       Reset All Filters
                     </DropdownMenuItem>
@@ -171,32 +171,32 @@ export function RegistryView({ initialDocuments }: RegistryViewProps) {
             </DropdownMenu>
 
             {/* Export Button */}
-            <Button 
+            <Button
               onClick={exportToCSV}
-              variant="outline" 
-              className="rounded-2xl border-primary/20 bg-primary/5 hover:bg-primary/10 px-8 py-6 h-auto text-base font-bold transition-all text-primary hover:scale-[1.02]"
+              variant="outline"
+              className="rounded-xl border-primary/20 bg-primary/5 hover:bg-primary/10 px-4 py-2 h-auto text-sm font-bold transition-all text-primary"
             >
-               <Download className="h-5 w-5 mr-3" /> Export CSV
+               <Download className="h-4 w-4 mr-2" /> Export CSV
             </Button>
          </div>
       </div>
 
       {/* ================= REGISTRY CONTENT ================= */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between px-6">
-          <div className="flex items-center gap-3">
-            <h3 className="text-xl font-bold tracking-tight text-white/80">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between px-4">
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-bold tracking-tight text-white/80">
               {searchQuery || statusFilter || typeFilter.length > 0 ? "Filtered Pipeline" : "Intelligence Assets"}
             </h3>
-            <Badge variant="outline" className="rounded-full bg-white/5 border-white/10 text-muted-foreground font-black text-[10px]">
-              {filteredDocuments.length} Records Found
+            <Badge variant="outline" className="rounded-full bg-white/5 border-white/10 text-muted-foreground font-black text-[9px]">
+              {filteredDocuments.length} Records
             </Badge>
           </div>
-          <div className="h-px flex-1 bg-linear-to-r from-white/5 to-transparent mx-6" />
+          <div className="h-px flex-1 bg-linear-to-r from-white/5 to-transparent mx-4" />
         </div>
-        
-        <div className="p-1 rounded-[2.5rem] bg-linear-to-b from-white/10 to-transparent">
-          <div className="rounded-[2.4rem] overflow-hidden glass-card">
+
+        <div className="p-0.5 rounded-2xl bg-linear-to-b from-white/10 to-transparent">
+          <div className="rounded-[0.9rem] overflow-hidden glass-card">
             <DocumentTable documents={filteredDocuments} />
           </div>
         </div>
