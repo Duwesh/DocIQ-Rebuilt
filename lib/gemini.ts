@@ -7,98 +7,164 @@ if (!apiKey) {
 
 const genAI = new GoogleGenerativeAI(apiKey);
 
-export type AnalysisType = "summary" | "qa" | "sentiment" | "entities" | "extract" | "keywords";
+export type AnalysisType =
+  | "summary"
+  | "qa"
+  | "sentiment"
+  | "entities"
+  | "extract"
+  | "keywords";
 
-const baseInstruction = `
-You are an expert AI assistant specialized in document analysis.
-Follow these rules strictly:
-- Only use the provided document content (no assumptions or hallucination)
-- Be concise but informative
-- Use structured output
-- Do not include explanations unless asked
-`;
+const baseInstruction = `You are a precise document analysis engine. Rules:
+- Base every claim on the provided document content only — never hallucinate.
+- Follow the requested output format exactly.
+- Do NOT wrap your response in markdown code fences (\`\`\`).`;
 
 function buildPrompt(analysisType: AnalysisType, textFallback?: string): string {
-  const docSection = textFallback ? `\n\nDocument:\n${textFallback}` : "";
+  const docSection = textFallback
+    ? `\n\n--- BEGIN DOCUMENT ---\n${textFallback}\n--- END DOCUMENT ---`
+    : "";
 
   const prompts: Record<AnalysisType, string> = {
     summary: `${baseInstruction}
 
-Task: Summarize the document.
+Analyze the document and produce a comprehensive summary in clean Markdown.
 
-Output format:
-- Title:
-- Key Points (bullet list):
-- Detailed Summary (paragraph):
-- Key Insights:
+Use this exact structure:
+
+## Title
+A single descriptive title for the document.
+
+## Key Points
+- Bullet 1
+- Bullet 2
+- (up to 7 bullets covering the most important facts)
+
+## Summary
+A 2-4 paragraph detailed summary capturing the document's purpose, main arguments, findings, and conclusions.
+
+## Key Insights
+- Insight 1
+- Insight 2
+- (non-obvious takeaways, implications, or patterns you noticed)
 ${docSection}`,
 
     qa: `${baseInstruction}
 
-Task: Generate 5 important question-answer pairs.
+Generate 5 important question-answer pairs from this document. Choose questions that test understanding of the core content.
 
-Output format (JSON):
+Respond with a valid JSON array only — no surrounding text:
 [
-  {
-    "question": "...",
-    "answer": "..."
-  }
+  {"question": "...", "answer": "..."},
+  {"question": "...", "answer": "..."},
+  {"question": "...", "answer": "..."},
+  {"question": "...", "answer": "..."},
+  {"question": "...", "answer": "..."}
 ]
 ${docSection}`,
 
     sentiment: `${baseInstruction}
 
-Task: Analyze the sentiment of the human-readable text in this document.
-If the document is mostly technical metadata or binary content with no meaningful text, say so clearly.
+Analyze the tone and emotional sentiment of this document.
+If the document is mostly technical metadata, code, or binary content with no meaningful prose, set overall_sentiment to "neutral" and explain why.
 
-Output format (JSON):
+Respond with a valid JSON object only — no surrounding text:
 {
-  "overall_sentiment": "positive | negative | neutral",
-  "confidence": "low | medium | high",
+  "overall_sentiment": "positive" | "negative" | "neutral" | "mixed",
+  "confidence": "low" | "medium" | "high",
   "tones": ["tone1", "tone2"],
-  "explanation": "brief explanation based on actual document content"
+  "explanation": "One sentence explaining the sentiment based on actual content."
 }
 ${docSection}`,
 
     entities: `${baseInstruction}
 
-Task: Extract named entities from the document.
+Extract all named entities from the document. Categorize each entity. If a category has no matches, use an empty array.
 
-Output format (JSON):
+Respond with a valid JSON object only — no surrounding text:
 {
-  "people": [],
-  "organizations": [],
-  "locations": [],
-  "dates": [],
-  "other": []
+  "people": ["Name 1", "Name 2"],
+  "organizations": ["Org 1"],
+  "locations": ["Place 1"],
+  "dates": ["Date 1"],
+  "other": ["Misc entity"]
 }
 ${docSection}`,
 
     extract: `${baseInstruction}
 
-Task: Extract structured key information.
+Extract structured information from this document. For any field with no matches, use an empty array or empty string.
 
-Output format (JSON):
+Respond with a valid JSON object only — no surrounding text:
 {
-  "summary": "...",
-  "key_points": [],
-  "important_dates": [],
-  "important_entities": [],
-  "numbers_and_metrics": [],
-  "action_items": []
+  "summary": "A 1-2 sentence summary.",
+  "key_points": ["point 1", "point 2"],
+  "important_dates": ["date 1"],
+  "important_entities": ["entity 1"],
+  "numbers_and_metrics": ["metric 1"],
+  "action_items": ["action 1"]
 }
 ${docSection}`,
 
     keywords: `${baseInstruction}
 
-Task: Extract the top 10 most important keywords or keyphrases from this document.
+Extract the top 10 most important keywords or keyphrases from this document. Choose terms that best represent the document's subject matter.
 
-Output format (JSON array of strings only, no extra explanation):
-["keyword1", "keyword2", "keyword3", ...]
+Respond with a valid JSON array of strings only — no surrounding text:
+["keyword1", "keyword2", "keyword3", "keyword4", "keyword5", "keyword6", "keyword7", "keyword8", "keyword9", "keyword10"]
 ${docSection}`,
   };
 
   return prompts[analysisType];
+}
+
+/**
+ * Strip markdown code fences and whitespace from an AI response
+ * so the result can be parsed as JSON.
+ */
+export function cleanJsonResponse(raw: string): string {
+  return raw
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```\s*$/, "")
+    .trim();
+}
+
+/**
+ * Parse a keywords response into a string array.
+ * Handles JSON arrays, code-fenced JSON, and comma-separated fallback.
+ */
+export function parseKeywords(raw: string): string[] {
+  try {
+    const parsed = JSON.parse(cleanJsonResponse(raw));
+    if (Array.isArray(parsed)) {
+      return parsed.map((k: unknown) => String(k).trim()).filter(Boolean);
+    }
+    return [];
+  } catch {
+    return raw
+      .replace(/[\[\]"]/g, "")
+      .split(",")
+      .map((k: string) => k.trim())
+      .filter(Boolean);
+  }
+}
+
+/**
+ * Parse a sentiment response into a clean JSON string for storage.
+ * Returns the cleaned JSON string, or a fallback JSON on failure.
+ */
+export function parseSentiment(raw: string): string {
+  try {
+    const parsed = JSON.parse(cleanJsonResponse(raw));
+    return JSON.stringify(parsed);
+  } catch {
+    return JSON.stringify({
+      overall_sentiment: "neutral",
+      confidence: "low",
+      tones: [],
+      explanation: "Could not parse sentiment analysis.",
+    });
+  }
 }
 
 /**
@@ -123,7 +189,6 @@ export async function analyzeDocumentFromBytes(
       mimeType === "application/msword";
 
     if (isPdf) {
-      // Pass PDF bytes directly — Gemini can read the visual/text layers natively
       const inlinePart = {
         inlineData: {
           mimeType: "application/pdf",

@@ -1,20 +1,77 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { analyzeDocumentFromBytes } from "@/lib/gemini";
+import {
+  analyzeDocumentFromBytes,
+  cleanJsonResponse,
+  parseKeywords,
+  parseSentiment,
+  type AnalysisType,
+} from "@/lib/gemini";
+import { rateLimit } from "@/lib/rate-limit";
+
+const ANALYZE_LIMIT = 20;
+const ANALYZE_WINDOW_MS = 60_000;
+
+const VALID_TYPES = new Set<string>([
+  "summary",
+  "qa",
+  "sentiment",
+  "entities",
+  "extract",
+  "keywords",
+]);
 
 export async function POST(req: Request) {
   try {
     const { userId, orgId } = await auth();
 
     if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 },
+      );
     }
 
-    const { documentId, analysisType } = await req.json();
+    const { success, resetInMs } = rateLimit(
+      `analyze:${userId}`,
+      ANALYZE_LIMIT,
+      ANALYZE_WINDOW_MS,
+    );
+    if (!success) {
+      return NextResponse.json(
+        { error: "Too many analysis requests. Please try again later." },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(Math.ceil(resetInMs / 1000)),
+          },
+        },
+      );
+    }
+
+    const body = await req.json().catch(() => null);
+    if (!body) {
+      return NextResponse.json(
+        { error: "Invalid request body" },
+        { status: 400 },
+      );
+    }
+
+    const { documentId, analysisType } = body;
 
     if (!documentId || !analysisType) {
-      return new NextResponse("Missing documentId or analysisType", { status: 400 });
+      return NextResponse.json(
+        { error: "Missing documentId or analysisType" },
+        { status: 400 },
+      );
+    }
+
+    if (!VALID_TYPES.has(analysisType)) {
+      return NextResponse.json(
+        { error: `Invalid analysis type: ${analysisType}` },
+        { status: 400 },
+      );
     }
 
     const document = await db.document.findUnique({
@@ -25,44 +82,69 @@ export async function POST(req: Request) {
     });
 
     if (!document) {
-      return new NextResponse("Document not found", { status: 404 });
+      return NextResponse.json(
+        { error: "Document not found" },
+        { status: 404 },
+      );
     }
 
     if (!document.fileUrl) {
-      return new NextResponse("Document has no file URL", { status: 400 });
+      return NextResponse.json(
+        { error: "Document has no file URL" },
+        { status: 400 },
+      );
     }
 
-    // Fetch the raw bytes + MIME type — no .text() on PDFs!
+    // Fetch the raw bytes + MIME type
     const fileResponse = await fetch(document.fileUrl);
+    if (!fileResponse.ok) {
+      return NextResponse.json(
+        { error: "Failed to fetch document file from storage" },
+        { status: 502 },
+      );
+    }
+
     const mimeType =
       fileResponse.headers.get("content-type") ||
       (document.fileType === "pdf" ? "application/pdf" : "text/plain");
     const fileBytes = await fileResponse.arrayBuffer();
 
-    const analysisResult = await analyzeDocumentFromBytes(fileBytes, mimeType, analysisType as any);
+    const analysisResult = await analyzeDocumentFromBytes(
+      fileBytes,
+      mimeType,
+      analysisType as AnalysisType,
+    );
+
+    if (analysisResult.startsWith("Could not analyze")) {
+      return NextResponse.json(
+        { error: "AI analysis failed. The model could not process this document." },
+        { status: 502 },
+      );
+    }
 
     // Route each analysis type to the correct database field
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
 
-    if (analysisType === "summary") {
-      updateData.aiSummary = analysisResult;
-    } else if (analysisType === "sentiment") {
-      updateData.sentiment = analysisResult;
-    } else if (analysisType === "keywords") {
-      try {
-        const cleaned = analysisResult.replace(/```json|```/g, "").trim();
-        const keywords: string[] = JSON.parse(cleaned);
-        updateData.aiKeywords = Array.isArray(keywords) ? keywords : [];
-      } catch {
-        updateData.aiKeywords = analysisResult
-          .replace(/[\[\]"]/g, "")
-          .split(",")
-          .map((k: string) => k.trim())
-          .filter(Boolean);
+    switch (analysisType) {
+      case "summary":
+        updateData.aiSummary = analysisResult;
+        break;
+
+      case "sentiment":
+        updateData.sentiment = parseSentiment(analysisResult);
+        break;
+
+      case "keywords":
+        updateData.aiKeywords = parseKeywords(analysisResult);
+        break;
+
+      case "entities":
+      case "extract":
+      case "qa": {
+        const cleaned = cleanJsonResponse(analysisResult);
+        updateData.content = `[${analysisType.toUpperCase()}]\n${cleaned}`;
+        break;
       }
-    } else {
-      // entities, extract, qa → content field (don't overwrite summary)
-      updateData.content = `[${analysisType.toUpperCase()}]\n${analysisResult}`;
     }
 
     const updatedDoc = await db.document.update({
@@ -73,6 +155,9 @@ export async function POST(req: Request) {
     return NextResponse.json(updatedDoc);
   } catch (error) {
     console.error("[ANALYZE_POST]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
